@@ -2,6 +2,7 @@ import { useState } from 'react';
 import SettingsView from './features/settings/SettingsView.jsx';
 import CapturesView from './features/captures/CapturesView.jsx';
 import KnowledgeView from './features/knowledge/KnowledgeView.jsx';
+import AskView from './features/ask/AskView.jsx';
 
 const ICONS = {
   captures: (
@@ -86,21 +87,16 @@ export default function App() {
       </header>
 
       <main className="main">
-        {tab !== 'ask' ? (
-          <>
-            <section className="hero compact">
-              <h1 className="hero-title">{c.title}</h1>
-              <p className="hero-text">{c.text}</p>
-            </section>
-            {tab === 'settings' && <SettingsView />}
-            {tab === 'captures' && (
-              <CapturesView onAnalyzed={() => setTab('knowledge')} />
-            )}
-            {tab === 'knowledge' && <KnowledgeView />}
-          </>
-        ) : (
-          <HomeContent c={c} />
+        <section className="hero compact">
+          <h1 className="hero-title">{c.title}</h1>
+          <p className="hero-text">{c.text}</p>
+        </section>
+        {tab === 'settings' && <SettingsView />}
+        {tab === 'captures' && (
+          <CapturesView onAnalyzed={() => setTab('knowledge')} />
         )}
+        {tab === 'knowledge' && <KnowledgeView />}
+        {tab === 'ask' && <AskView />}
       </main>
 
       <nav className="nav-mobile">
@@ -119,42 +115,3 @@ export default function App() {
   );
 }
 
-function HomeContent({ c }) {
-  return (
-    <>
-      <section className="hero">
-        <span className="eyebrow">Bientôt disponible</span>
-        <h1 className="hero-title">{c.title}</h1>
-        <p className="hero-text">{c.text}</p>
-      </section>
-
-      <section className="cards">
-          <Card
-            icon={ICONS.captures}
-            title="Local d'abord"
-            text="Vos captures et connaissances vivent dans votre navigateur, pas sur un serveur."
-          />
-          <Card
-            icon={ICONS.knowledge}
-            title="Sobriété cognitive"
-            text="Des synthèses claires et concises, générées à partir de vos écrans."
-          />
-          <Card
-            icon={ICONS.ask}
-            title="Intelligence choisie"
-            text="Haiku, Sonnet ou Opus — vous choisissez l'équilibre coût, vitesse, finesse."
-          />
-      </section>
-    </>
-  );
-}
-
-function Card({ icon, title, text }) {
-  return (
-    <article className="card">
-      <span className="card-icon">{icon}</span>
-      <h3 className="card-title">{title}</h3>
-      <p className="card-text">{text}</p>
-    </article>
-  );
-}
