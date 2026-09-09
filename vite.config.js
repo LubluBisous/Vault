@@ -19,8 +19,8 @@ export default defineConfig({
         start_url: '/Vault/',
         scope: '/Vault/',
         display: 'standalone',
-        background_color: '#0f1420',
-        theme_color: '#0f1420',
+        background_color: '#faf6ef',
+        theme_color: '#faf6ef',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
