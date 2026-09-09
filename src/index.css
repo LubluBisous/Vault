@@ -415,6 +415,137 @@ body {
   margin-top: 4px;
 }
 
+/* ── Captures ─────────────────────────────────── */
+.captures {
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.capture-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-ghost.tall {
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-size: 14px;
+}
+
+.capture-hint {
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.capture-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+
+.btn-link {
+  border: none;
+  background: none;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--terracotta);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.capture-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.capture-thumb {
+  position: relative;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--card);
+}
+
+.capture-thumb img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.capture-thumb figcaption {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.capture-num {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fdfcf9;
+  background: rgba(46, 42, 36, 0.65);
+  border-radius: 8px;
+  padding: 2px 8px;
+}
+
+.thumb-rm {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  pointer-events: auto;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(46, 42, 36, 0.65);
+  color: #fdfcf9;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumb-rm:hover {
+  background: var(--terracotta);
+}
+
+.analyze-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.capture-empty {
+  text-align: center;
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 40px 24px;
+}
+
+.capture-empty p {
+  color: var(--ink-soft);
+  font-size: 14.5px;
+  line-height: 1.65;
+  margin: 0 auto;
+  max-width: 400px;
+}
+
 /* ── Navigation mobile ────────────────────────── */
 .nav-mobile {
   display: none;

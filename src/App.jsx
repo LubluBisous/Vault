@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import SettingsView from './features/settings/SettingsView.jsx';
+import CapturesView from './features/captures/CapturesView.jsx';
 
 const ICONS = {
   captures: (
@@ -84,13 +85,13 @@ export default function App() {
       </header>
 
       <main className="main">
-        {tab === 'settings' ? (
+        {tab === 'settings' || tab === 'captures' ? (
           <>
             <section className="hero compact">
               <h1 className="hero-title">{c.title}</h1>
               <p className="hero-text">{c.text}</p>
             </section>
-            <SettingsView />
+            {tab === 'settings' ? <SettingsView /> : <CapturesView />}
           </>
         ) : (
           <HomeContent c={c} />
