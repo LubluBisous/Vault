@@ -8,6 +8,7 @@ import {
 } from '../../lib/db.js';
 import { fileToDataUrl, resizeDataUrl } from '../../lib/image.js';
 import { analyzeCaptures } from '../../lib/analyze.js';
+import { organizeBase } from '../../lib/organize.js';
 import {
   getApiKey,
   getCaptureSurface,
@@ -165,6 +166,12 @@ export default function CapturesView({ onAnalyzed }) {
         await saveCapture({ ...c, analyzed: true });
       }
       setCaptures([]);
+      // Réorganisation du sommaire — non bloquante si elle échoue.
+      try {
+        await organizeBase(setProgress);
+      } catch {
+        /* le sommaire pourra être régénéré depuis l'onglet Connaissances */
+      }
       setProgress('');
       onAnalyzed?.({ created, updated });
     } catch (err) {

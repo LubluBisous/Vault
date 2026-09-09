@@ -613,9 +613,101 @@ body {
   gap: 8px;
 }
 
-.knowledge-search {
-  width: 100%;
+.knowledge-toolbar {
+  display: flex;
+  gap: 10px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.knowledge-search {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* ── Sommaire ── */
+.toc {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  margin-bottom: 28px;
+}
+
+.toc-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.toc-list,
+.toc-list ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.toc-list > li {
+  margin: 8px 0;
+}
+
+.toc-list > li > a {
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.toc-list ol {
+  margin: 4px 0 10px 22px;
+}
+
+.toc-list ol a {
+  font-size: 13.5px;
+  font-weight: 400;
+}
+
+.toc a {
+  color: var(--ink);
+  text-decoration: none;
+  display: inline-block;
+  padding: 2px 0;
+}
+
+.toc a:hover {
+  color: var(--sage-deep);
+}
+
+.toc-num {
+  color: var(--sage-deep);
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.chapter {
+  margin-bottom: 32px;
+  scroll-margin-top: 90px;
+}
+
+.chapter-title {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--sage-mist);
+}
+
+.doc-section {
+  margin-bottom: 22px;
+  scroll-margin-top: 90px;
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--sage-deep);
+  margin: 0 0 10px;
 }
 
 .module-group {

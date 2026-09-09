@@ -2,7 +2,7 @@
 // Tout reste sur l'appareil ; rien n'est synchronisé.
 
 const DB_NAME = 'vault';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let _dbPromise = null;
 
@@ -17,6 +17,9 @@ function openDb() {
       }
       if (!db.objectStoreNames.contains('knowledge')) {
         db.createObjectStore('knowledge', { keyPath: 'id' });
+      }
+      if (!db.objectStoreNames.contains('meta')) {
+        db.createObjectStore('meta', { keyPath: 'id' });
       }
     };
     req.onsuccess = () => resolve(req.result);
@@ -77,4 +80,14 @@ export async function listEntries() {
 
 export function deleteEntry(id) {
   return tx('knowledge', 'readwrite', (s) => s.delete(id));
+}
+
+// ── Métadonnées (structure de la documentation, etc.) ──
+
+export function saveMeta(doc) {
+  return tx('meta', 'readwrite', (s) => s.put(doc));
+}
+
+export function getMeta(id) {
+  return tx('meta', 'readonly', (s) => s.get(id));
 }
