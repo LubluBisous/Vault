@@ -1,9 +1,18 @@
 import { useState } from 'react';
-import { MODELS, getApiKey, setApiKey, getModel, setModel } from '../../lib/settings.js';
+import {
+  MODELS,
+  getApiKey,
+  setApiKey,
+  getModel,
+  setModel,
+  getWorkspaceId,
+  setWorkspaceId,
+} from '../../lib/settings.js';
 import { testConnection } from '../../lib/claude.js';
 
 export default function SettingsView() {
   const [apiKey, setApiKeyState] = useState(getApiKey());
+  const [workspaceId, setWorkspaceIdState] = useState(getWorkspaceId());
   const [model, setModelState] = useState(getModel());
   const [showKey, setShowKey] = useState(false);
   const [status, setStatus] = useState(null); // {ok: bool, msg: string}
@@ -19,6 +28,13 @@ export default function SettingsView() {
   function onModelChange(id) {
     setModelState(id);
     setModel(id);
+  }
+
+  function onWorkspaceChange(e) {
+    const v = e.target.value.trim();
+    setWorkspaceIdState(v);
+    setWorkspaceId(v);
+    setStatus(null);
   }
 
   async function onTest() {
@@ -73,6 +89,31 @@ export default function SettingsView() {
             {showKey ? 'Masquer' : 'Afficher'}
           </button>
         </div>
+        <label className="field-label workspace-label" htmlFor="workspace-id">
+          Workspace ID <span className="label-optional">— requis seulement si le test l'exige</span>
+        </label>
+        <input
+          id="workspace-id"
+          className="field-input"
+          type="text"
+          placeholder="wrkspc_…"
+          value={workspaceId}
+          onChange={onWorkspaceChange}
+          autoComplete="off"
+          spellCheck="false"
+        />
+        <p className="panel-note workspace-note">
+          Si le test échoue avec « anthropic-workspace-id header », votre clé
+          n'est pas rattachée à un workspace : copiez l'identifiant depuis{' '}
+          <a
+            href="https://console.anthropic.com/settings/workspaces"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Settings → Workspaces
+          </a>{' '}
+          (cliquez sur le workspace, l'ID commence par <code>wrkspc_</code>).
+        </p>
         <div className="test-row">
           <button
             type="button"

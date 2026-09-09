@@ -2,6 +2,7 @@
 
 const KEY_API = 'vault_api_key';
 const KEY_MODEL = 'vault_model';
+const KEY_WORKSPACE = 'vault_workspace_id';
 
 export const MODELS = [
   {
@@ -43,6 +44,23 @@ export function setApiKey(key) {
     else localStorage.removeItem(KEY_API);
   } catch {
     /* stockage indisponible (navigation privée) */
+  }
+}
+
+export function getWorkspaceId() {
+  try {
+    return localStorage.getItem(KEY_WORKSPACE) || '';
+  } catch {
+    return '';
+  }
+}
+
+export function setWorkspaceId(id) {
+  try {
+    if (id) localStorage.setItem(KEY_WORKSPACE, id);
+    else localStorage.removeItem(KEY_WORKSPACE);
+  } catch {
+    /* stockage indisponible */
   }
 }
 

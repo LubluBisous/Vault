@@ -1,12 +1,20 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { getApiKey, getModel } from './settings.js';
+import { getApiKey, getModel, getWorkspaceId } from './settings.js';
 
 // La clé appartient à l'utilisateur et ne quitte son navigateur que vers
 // l'API Anthropic — d'où dangerouslyAllowBrowser, assumé pour une app 100 % locale.
 export function makeClient() {
   const apiKey = getApiKey();
   if (!apiKey) throw new Error('Aucune clé API configurée.');
-  return new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+  const workspaceId = getWorkspaceId();
+  return new Anthropic({
+    apiKey,
+    dangerouslyAllowBrowser: true,
+    // Les clés « organisation » non rattachées à un workspace exigent cet en-tête.
+    ...(workspaceId && {
+      defaultHeaders: { 'anthropic-workspace-id': workspaceId },
+    }),
+  });
 }
 
 // Vérifie la clé sans rien facturer : le comptage de tokens est gratuit
