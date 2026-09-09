@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import SettingsView from './features/settings/SettingsView.jsx';
 import CapturesView from './features/captures/CapturesView.jsx';
+import KnowledgeView from './features/knowledge/KnowledgeView.jsx';
 
 const ICONS = {
   captures: (
@@ -85,13 +86,17 @@ export default function App() {
       </header>
 
       <main className="main">
-        {tab === 'settings' || tab === 'captures' ? (
+        {tab !== 'ask' ? (
           <>
             <section className="hero compact">
               <h1 className="hero-title">{c.title}</h1>
               <p className="hero-text">{c.text}</p>
             </section>
-            {tab === 'settings' ? <SettingsView /> : <CapturesView />}
+            {tab === 'settings' && <SettingsView />}
+            {tab === 'captures' && (
+              <CapturesView onAnalyzed={() => setTab('knowledge')} />
+            )}
+            {tab === 'knowledge' && <KnowledgeView />}
           </>
         ) : (
           <HomeContent c={c} />

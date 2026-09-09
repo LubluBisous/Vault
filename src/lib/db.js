@@ -47,10 +47,34 @@ export async function listCaptures() {
   return (items || []).sort((a, b) => a.createdAt - b.createdAt);
 }
 
+export async function listPendingCaptures() {
+  const items = await listCaptures();
+  return items.filter((c) => !c.analyzed);
+}
+
 export function deleteCapture(id) {
   return tx('captures', 'readwrite', (s) => s.delete(id));
 }
 
 export function clearCaptures() {
   return tx('captures', 'readwrite', (s) => s.clear());
+}
+
+export function getCapture(id) {
+  return tx('captures', 'readonly', (s) => s.get(id));
+}
+
+// ── Base de connaissances ─────────────────────────
+
+export function saveEntry(entry) {
+  return tx('knowledge', 'readwrite', (s) => s.put(entry));
+}
+
+export async function listEntries() {
+  const items = await tx('knowledge', 'readonly', (s) => s.getAll());
+  return (items || []).sort((a, b) => b.updatedAt - a.updatedAt);
+}
+
+export function deleteEntry(id) {
+  return tx('knowledge', 'readwrite', (s) => s.delete(id));
 }

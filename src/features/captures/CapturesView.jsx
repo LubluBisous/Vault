@@ -1,18 +1,28 @@
 import { useEffect, useRef, useState } from 'react';
-import { saveCapture, listCaptures, deleteCapture, clearCaptures } from '../../lib/db.js';
+import {
+  saveCapture,
+  listPendingCaptures,
+  deleteCapture,
+  clearCaptures,
+  saveEntry,
+} from '../../lib/db.js';
 import { fileToDataUrl, resizeDataUrl } from '../../lib/image.js';
+import { analyzeCaptures } from '../../lib/analyze.js';
+import { getApiKey } from '../../lib/settings.js';
 
 const canScreenCapture =
   typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getDisplayMedia;
 
-export default function CapturesView() {
+export default function CapturesView({ onAnalyzed }) {
   const [captures, setCaptures] = useState([]);
   const [busy, setBusy] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [progress, setProgress] = useState('');
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    listCaptures().then(setCaptures).catch(() => {});
+    listPendingCaptures().then(setCaptures).catch(() => {});
   }, []);
 
   async function addCapture(dataUrl) {
@@ -89,6 +99,43 @@ export default function CapturesView() {
     setCaptures([]);
   }
 
+  async function onAnalyze() {
+    if (!getApiKey()) {
+      setError('Configurez votre clé API dans les Réglages avant de lancer une analyse.');
+      return;
+    }
+    setError(null);
+    setAnalyzing(true);
+    try {
+      const entries = await analyzeCaptures(captures, setProgress);
+      if (!entries.length) {
+        throw new Error('Aucune fiche exploitable dans la réponse.');
+      }
+      setProgress('Enregistrement des fiches…');
+      for (const entry of entries) {
+        await saveEntry(entry);
+      }
+      // Les captures analysées sont conservées mais sortent de la file d'attente.
+      for (const c of captures) {
+        await saveCapture({ ...c, analyzed: true });
+      }
+      setCaptures([]);
+      setProgress('');
+      onAnalyzed?.(entries.length);
+    } catch (err) {
+      setProgress('');
+      const detail =
+        err?.status === 401
+          ? 'Clé API invalide — vérifiez les Réglages.'
+          : err?.status === 429
+            ? 'Limite de débit atteinte — réessayez dans une minute.'
+            : err?.message || 'Erreur inconnue.';
+      setError(`L'analyse a échoué. ${detail}`);
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
   return (
     <div className="captures">
       <div className="capture-actions">
@@ -158,9 +205,15 @@ export default function CapturesView() {
             ))}
           </div>
           <div className="analyze-row">
-            <button type="button" className="btn-primary" disabled>
-              Analyser avec Claude — bientôt
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={onAnalyze}
+              disabled={analyzing || busy}
+            >
+              {analyzing ? 'Analyse en cours…' : 'Analyser avec Claude'}
             </button>
+            {progress && <span className="status">{progress}</span>}
           </div>
         </>
       ) : (
