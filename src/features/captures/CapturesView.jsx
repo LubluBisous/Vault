@@ -30,7 +30,10 @@ export default function CapturesView({ onAnalyzed }) {
   const [progress, setProgress] = useState('');
   const [error, setError] = useState(null);
   const [surface, setSurface] = useState(getCaptureSurface());
+  const [sharing, setSharing] = useState(false);
   const fileInputRef = useRef(null);
+  const streamRef = useRef(null);
+  const videoRef = useRef(null);
 
   function onSurfaceChange(id) {
     setSurface(id);
@@ -39,7 +42,16 @@ export default function CapturesView({ onAnalyzed }) {
 
   useEffect(() => {
     listPendingCaptures().then(setCaptures).catch(() => {});
+    // Fin de session si l'on quitte l'onglet Captures.
+    return () => stopSharing();
   }, []);
+
+  function stopSharing() {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+    videoRef.current = null;
+    setSharing(false);
+  }
 
   async function addCapture(dataUrl) {
     const resized = await resizeDataUrl(dataUrl);
@@ -55,30 +67,39 @@ export default function CapturesView({ onAnalyzed }) {
   async function onScreenCapture() {
     setError(null);
     setBusy(true);
-    let stream = null;
     try {
-      stream = await navigator.mediaDevices.getDisplayMedia({
-        // displaySurface est une préférence : le sélecteur du navigateur
-        // s'ouvre sur le panneau correspondant (le choix final reste à l'utilisateur).
-        video: { frameRate: 5, displaySurface: surface },
-        audio: false,
-      });
-      // Mémorise ce que l'utilisateur a réellement choisi dans le sélecteur.
-      const chosen = stream.getVideoTracks()[0]?.getSettings?.()?.displaySurface;
-      if (chosen && chosen !== surface) {
-        setSurface(chosen);
-        setCaptureSurface(chosen);
+      const firstShot = !streamRef.current;
+      if (firstShot) {
+        // Première capture de la session : le navigateur affiche son sélecteur.
+        // Le flux est ensuite conservé — les clichés suivants sont instantanés.
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: { frameRate: 5, displaySurface: surface },
+          audio: false,
+        });
+        const track = stream.getVideoTracks()[0];
+        // Mémorise ce que l'utilisateur a réellement choisi dans le sélecteur.
+        const chosen = track?.getSettings?.()?.displaySurface;
+        if (chosen && chosen !== surface) {
+          setSurface(chosen);
+          setCaptureSurface(chosen);
+        }
+        // L'utilisateur peut arrêter via la barre du navigateur.
+        if (track) track.onended = () => stopSharing();
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.muted = true;
+        await video.play();
+        await new Promise((resolve) => {
+          const check = () => (video.videoWidth > 0 ? resolve() : setTimeout(check, 50));
+          check();
+        });
+        streamRef.current = stream;
+        videoRef.current = video;
+        setSharing(true);
+        // Laisser le sélecteur de l'OS disparaître de l'écran capturé.
+        await new Promise((r) => setTimeout(r, 400));
       }
-      const video = document.createElement('video');
-      video.srcObject = stream;
-      video.muted = true;
-      await video.play();
-      // Attendre un vrai frame, puis laisser le sélecteur de l'OS disparaître.
-      await new Promise((resolve) => {
-        const check = () => (video.videoWidth > 0 ? resolve() : setTimeout(check, 50));
-        check();
-      });
-      await new Promise((r) => setTimeout(r, 400));
+      const video = videoRef.current;
       const canvas = document.createElement('canvas');
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
@@ -88,8 +109,8 @@ export default function CapturesView({ onAnalyzed }) {
       if (err?.name !== 'NotAllowedError') {
         setError("La capture a échoué. Réessayez ou importez une image.");
       }
+      stopSharing();
     } finally {
-      stream?.getTracks().forEach((t) => t.stop());
       setBusy(false);
     }
   }
@@ -162,7 +183,7 @@ export default function CapturesView({ onAnalyzed }) {
 
   return (
     <div className="captures">
-      {canScreenCapture && (
+      {canScreenCapture && !sharing && (
         <div className="surface-picker" role="radiogroup" aria-label="Source de capture">
           {SURFACES.map((s) => (
             <button
@@ -178,6 +199,12 @@ export default function CapturesView({ onAnalyzed }) {
           ))}
         </div>
       )}
+      {sharing && (
+        <p className="sharing-badge">
+          <span className="sharing-dot" /> Partage en cours — les captures sont
+          instantanées
+        </p>
+      )}
       <div className="capture-actions">
         {canScreenCapture && (
           <button
@@ -186,7 +213,12 @@ export default function CapturesView({ onAnalyzed }) {
             onClick={onScreenCapture}
             disabled={busy}
           >
-            {busy ? 'Un instant…' : "Capturer l'écran"}
+            {busy ? 'Un instant…' : sharing ? 'Prendre une capture' : "Capturer l'écran"}
+          </button>
+        )}
+        {sharing && (
+          <button type="button" className="btn-ghost tall" onClick={stopSharing}>
+            Arrêter le partage
           </button>
         )}
         <button

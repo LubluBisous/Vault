@@ -458,6 +458,30 @@ body {
   box-shadow: 0 1px 4px rgba(46, 42, 36, 0.08);
 }
 
+.sharing-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sage-deep);
+  margin: 0;
+}
+
+.sharing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sage-deep);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
 .capture-actions {
   display: flex;
   gap: 12px;
