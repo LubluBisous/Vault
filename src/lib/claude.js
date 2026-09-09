@@ -9,10 +9,14 @@ export function makeClient() {
   return new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
 }
 
-// Vérifie la clé sans consommer de tokens (simple listing des modèles).
+// Vérifie la clé sans rien facturer : le comptage de tokens est gratuit
+// et accepte toutes les clés (models.list exige un workspace pour certaines).
 export async function testConnection() {
   const client = makeClient();
-  await client.models.list();
+  await client.messages.countTokens({
+    model: 'claude-haiku-4-5',
+    messages: [{ role: 'user', content: 'ping' }],
+  });
   return true;
 }
 
