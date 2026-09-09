@@ -10,7 +10,15 @@ const TYPE_LABELS = {
   autre: 'Autre',
 };
 
-export default function KnowledgeView() {
+function formatDate(ts) {
+  return new Date(ts).toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+export default function KnowledgeView({ notice, onDismissNotice }) {
   const [entries, setEntries] = useState([]);
   const [search, setSearch] = useState('');
   const [openId, setOpenId] = useState(null);
@@ -58,6 +66,16 @@ export default function KnowledgeView() {
 
   return (
     <div className="knowledge">
+      {notice && (
+        <p className="analysis-notice">
+          🌿 Analyse terminée : {notice.created} fiche{notice.created > 1 ? 's' : ''}{' '}
+          créée{notice.created > 1 ? 's' : ''}, {notice.updated} mise
+          {notice.updated > 1 ? 's' : ''} à jour.
+          <button type="button" className="btn-link" onClick={onDismissNotice}>
+            Fermer
+          </button>
+        </p>
+      )}
       <input
         type="search"
         className="field-input knowledge-search"
@@ -96,6 +114,11 @@ export default function KnowledgeView() {
                     </div>
                   )}
                   <div className="entry-actions">
+                    <span className="entry-dates">
+                      Créée le {formatDate(e.createdAt)}
+                      {e.updatedAt !== e.createdAt &&
+                        ` · mise à jour le ${formatDate(e.updatedAt)}`}
+                    </span>
                     <button
                       type="button"
                       className="btn-link"

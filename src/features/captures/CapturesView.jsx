@@ -152,7 +152,7 @@ export default function CapturesView({ onAnalyzed }) {
     setError(null);
     setAnalyzing(true);
     try {
-      const entries = await analyzeCaptures(captures, setProgress);
+      const { entries, created, updated } = await analyzeCaptures(captures, setProgress);
       if (!entries.length) {
         throw new Error('Aucune fiche exploitable dans la réponse.');
       }
@@ -166,7 +166,7 @@ export default function CapturesView({ onAnalyzed }) {
       }
       setCaptures([]);
       setProgress('');
-      onAnalyzed?.(entries.length);
+      onAnalyzed?.({ created, updated });
     } catch (err) {
       setProgress('');
       const detail =

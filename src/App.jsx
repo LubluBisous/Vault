@@ -60,6 +60,7 @@ const CONTENT = {
 
 export default function App() {
   const [tab, setTab] = useState('captures');
+  const [analysisNotice, setAnalysisNotice] = useState(null);
   const c = CONTENT[tab];
 
   return (
@@ -93,9 +94,19 @@ export default function App() {
         </section>
         {tab === 'settings' && <SettingsView />}
         {tab === 'captures' && (
-          <CapturesView onAnalyzed={() => setTab('knowledge')} />
+          <CapturesView
+            onAnalyzed={(result) => {
+              setAnalysisNotice(result);
+              setTab('knowledge');
+            }}
+          />
         )}
-        {tab === 'knowledge' && <KnowledgeView />}
+        {tab === 'knowledge' && (
+          <KnowledgeView
+            notice={analysisNotice}
+            onDismissNotice={() => setAnalysisNotice(null)}
+          />
+        )}
         {tab === 'ask' && <AskView />}
       </main>
 
