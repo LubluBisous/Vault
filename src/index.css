@@ -1,0 +1,128 @@
+:root {
+  --bg: #0f1420;
+  --bg-panel: #1a2332;
+  --bg-hover: #232f44;
+  --border: #2c3a52;
+  --text: #e2e8f0;
+  --text-dim: #8494ab;
+  --accent: #7c9aff;
+  --accent-dim: #4a5f9e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.app-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.tab-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.tab-btn.active {
+  background: var(--bg-hover);
+  border-color: var(--accent-dim);
+  color: var(--accent);
+}
+
+.app-main {
+  flex: 1;
+  padding: 24px 16px;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.placeholder {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.placeholder h2 {
+  margin-top: 0;
+}
+
+.placeholder p {
+  color: var(--text-dim);
+  max-width: 520px;
+  margin: 12px auto;
+  line-height: 1.6;
+}
+
+.soon {
+  font-size: 14px;
+}
+
+/* Mobile : onglets en bas, plein écran */
+@media (max-width: 600px) {
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .app-tabs {
+    justify-content: space-between;
+  }
+
+  .tab-btn {
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 4px;
+    font-size: 12px;
+  }
+}
