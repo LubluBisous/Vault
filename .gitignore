@@ -1,0 +1,30 @@
+# Données confidentielles — jamais versionnées
+data/
+
+# Captures d'écran et exports
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+
+# Dépendances
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Environnement et secrets
+.env
+.env.*
+*.local
+
+# Système
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
