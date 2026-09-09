@@ -3,6 +3,7 @@
 const KEY_API = 'vault_api_key';
 const KEY_MODEL = 'vault_model';
 const KEY_WORKSPACE = 'vault_workspace_id';
+const KEY_CAPTURE_SURFACE = 'vault_capture_surface';
 
 export const MODELS = [
   {
@@ -59,6 +60,24 @@ export function setWorkspaceId(id) {
   try {
     if (id) localStorage.setItem(KEY_WORKSPACE, id);
     else localStorage.removeItem(KEY_WORKSPACE);
+  } catch {
+    /* stockage indisponible */
+  }
+}
+
+// Surface de capture préférée : 'monitor' | 'window' | 'browser'.
+export function getCaptureSurface() {
+  try {
+    const v = localStorage.getItem(KEY_CAPTURE_SURFACE);
+    return ['monitor', 'window', 'browser'].includes(v) ? v : 'monitor';
+  } catch {
+    return 'monitor';
+  }
+}
+
+export function setCaptureSurface(surface) {
+  try {
+    localStorage.setItem(KEY_CAPTURE_SURFACE, surface);
   } catch {
     /* stockage indisponible */
   }

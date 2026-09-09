@@ -8,10 +8,20 @@ import {
 } from '../../lib/db.js';
 import { fileToDataUrl, resizeDataUrl } from '../../lib/image.js';
 import { analyzeCaptures } from '../../lib/analyze.js';
-import { getApiKey } from '../../lib/settings.js';
+import {
+  getApiKey,
+  getCaptureSurface,
+  setCaptureSurface,
+} from '../../lib/settings.js';
 
 const canScreenCapture =
   typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getDisplayMedia;
+
+const SURFACES = [
+  { id: 'monitor', label: 'Écran entier' },
+  { id: 'window', label: 'Fenêtre' },
+  { id: 'browser', label: 'Onglet' },
+];
 
 export default function CapturesView({ onAnalyzed }) {
   const [captures, setCaptures] = useState([]);
@@ -19,7 +29,13 @@ export default function CapturesView({ onAnalyzed }) {
   const [analyzing, setAnalyzing] = useState(false);
   const [progress, setProgress] = useState('');
   const [error, setError] = useState(null);
+  const [surface, setSurface] = useState(getCaptureSurface());
   const fileInputRef = useRef(null);
+
+  function onSurfaceChange(id) {
+    setSurface(id);
+    setCaptureSurface(id);
+  }
 
   useEffect(() => {
     listPendingCaptures().then(setCaptures).catch(() => {});
@@ -42,9 +58,17 @@ export default function CapturesView({ onAnalyzed }) {
     let stream = null;
     try {
       stream = await navigator.mediaDevices.getDisplayMedia({
-        video: { frameRate: 5 },
+        // displaySurface est une préférence : le sélecteur du navigateur
+        // s'ouvre sur le panneau correspondant (le choix final reste à l'utilisateur).
+        video: { frameRate: 5, displaySurface: surface },
         audio: false,
       });
+      // Mémorise ce que l'utilisateur a réellement choisi dans le sélecteur.
+      const chosen = stream.getVideoTracks()[0]?.getSettings?.()?.displaySurface;
+      if (chosen && chosen !== surface) {
+        setSurface(chosen);
+        setCaptureSurface(chosen);
+      }
       const video = document.createElement('video');
       video.srcObject = stream;
       video.muted = true;
@@ -138,6 +162,22 @@ export default function CapturesView({ onAnalyzed }) {
 
   return (
     <div className="captures">
+      {canScreenCapture && (
+        <div className="surface-picker" role="radiogroup" aria-label="Source de capture">
+          {SURFACES.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              role="radio"
+              aria-checked={surface === s.id}
+              className={`surface-btn ${surface === s.id ? 'active' : ''}`}
+              onClick={() => onSurfaceChange(s.id)}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="capture-actions">
         {canScreenCapture && (
           <button
