@@ -37,7 +37,8 @@ function buildBaseContext(entries) {
   const fiches = entries
     .map(
       (e) =>
-        `### id: ${e.id}\ntitre : ${e.title}\nmodule : ${e.module}\ntype : ${e.type}\nrésumé : ${e.summary}\ndétails :\n${e.details}`
+        `### id: ${e.id}\ntitre : ${e.title}\nmodule : ${e.module}\ntype : ${e.type}\nrésumé : ${e.summary}\ndétails :\n${e.details}` +
+        (e.notes ? `\nnotes de l'utilisateur (à respecter, ne jamais contredire sans preuve visuelle) :\n${e.notes}` : '')
     )
     .join('\n\n');
   return `MODULES EXISTANTS : ${modules.join(' | ')}\n\nBASE DE CONNAISSANCES EXISTANTE (${entries.length} fiches) :\n\n${fiches}`;
@@ -126,6 +127,8 @@ export async function analyzeCaptures(captures, onProgress = () => {}) {
         summary: String(e.summary || prev?.summary || ''),
         details: String(e.details || prev?.details || ''),
         tags: Array.isArray(e.tags) ? e.tags.map(String).slice(0, 10) : prev?.tags || [],
+        // Les notes personnelles appartiennent à l'utilisateur : jamais touchées par l'analyse.
+        notes: prev?.notes || '',
         captureIds: [...new Set([...(prev?.captureIds || []), ...captureIds])],
       };
     });

@@ -15,6 +15,7 @@ function buildSystem(entries) {
       (e) =>
         `## [${TYPE_LABELS[e.type] || 'Autre'}] ${e.title} (module : ${e.module})\n` +
         `${e.summary}\n\n${e.details}\n` +
+        (e.notes ? `\nNotes personnelles du Business Analyst :\n${e.notes}\n` : '') +
         (e.tags?.length ? `Tags : ${e.tags.join(', ')}\n` : '')
     )
     .join('\n---\n\n');

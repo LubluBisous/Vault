@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { listEntries, deleteEntry } from '../../lib/db.js';
+import { listEntries, deleteEntry, saveEntry } from '../../lib/db.js';
 import { organizeBase, getStructure } from '../../lib/organize.js';
 import { getApiKey } from '../../lib/settings.js';
 import { renderMarkdown } from '../../lib/markdown.js';
@@ -27,6 +27,44 @@ export default function KnowledgeView({ notice, onDismissNotice }) {
   const [openId, setOpenId] = useState(null);
   const [organizing, setOrganizing] = useState(false);
   const [error, setError] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [form, setForm] = useState(null);
+
+  function startEdit(e) {
+    setEditingId(e.id);
+    setForm({
+      title: e.title,
+      module: e.module,
+      type: e.type,
+      summary: e.summary,
+      details: e.details,
+      notes: e.notes || '',
+      tags: (e.tags || []).join(', '),
+    });
+    setOpenId(e.id);
+  }
+
+  async function saveEdit(original) {
+    const updated = {
+      ...original,
+      title: form.title.trim() || original.title,
+      module: form.module.trim() || original.module,
+      type: form.type,
+      summary: form.summary.trim(),
+      details: form.details,
+      notes: form.notes.trim(),
+      tags: form.tags
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean)
+        .slice(0, 10),
+      updatedAt: Date.now(),
+    };
+    await saveEntry(updated);
+    setEntries((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
+    setEditingId(null);
+    setForm(null);
+  }
 
   useEffect(() => {
     listEntries().then(setEntries).catch(() => {});
@@ -135,12 +173,21 @@ export default function KnowledgeView({ notice, onDismissNotice }) {
         <span className="entry-chevron">{openId === e.id ? '−' : '+'}</span>
       </button>
       <p className="entry-summary">{e.summary}</p>
-      {openId === e.id && (
+      {openId === e.id && editingId !== e.id && (
         <div className="entry-body">
           <div
             className="entry-details"
             dangerouslySetInnerHTML={{ __html: renderMarkdown(e.details) }}
           />
+          {e.notes && (
+            <div className="entry-notes">
+              <span className="entry-notes-label">📝 Notes personnelles</span>
+              <div
+                className="entry-details"
+                dangerouslySetInnerHTML={{ __html: renderMarkdown(e.notes) }}
+              />
+            </div>
+          )}
           {e.tags?.length > 0 && (
             <div className="entry-tags">
               {e.tags.map((t) => (
@@ -156,8 +203,94 @@ export default function KnowledgeView({ notice, onDismissNotice }) {
               {e.updatedAt !== e.createdAt &&
                 ` · mise à jour le ${formatDate(e.updatedAt)}`}
             </span>
-            <button type="button" className="btn-link" onClick={() => onDelete(e.id)}>
-              Supprimer cette fiche
+            <span className="entry-buttons">
+              <button type="button" className="btn-link edit" onClick={() => startEdit(e)}>
+                Modifier
+              </button>
+              <button type="button" className="btn-link" onClick={() => onDelete(e.id)}>
+                Supprimer
+              </button>
+            </span>
+          </div>
+        </div>
+      )}
+      {editingId === e.id && form && (
+        <div className="entry-body entry-form">
+          <label className="field-label">Titre</label>
+          <input
+            className="field-input"
+            value={form.title}
+            onChange={(ev) => setForm({ ...form, title: ev.target.value })}
+          />
+          <div className="form-row">
+            <div className="form-col">
+              <label className="field-label">Module</label>
+              <input
+                className="field-input"
+                value={form.module}
+                onChange={(ev) => setForm({ ...form, module: ev.target.value })}
+              />
+            </div>
+            <div className="form-col">
+              <label className="field-label">Type</label>
+              <select
+                className="field-input"
+                value={form.type}
+                onChange={(ev) => setForm({ ...form, type: ev.target.value })}
+              >
+                {Object.entries(TYPE_LABELS).map(([v, l]) => (
+                  <option key={v} value={v}>
+                    {l}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <label className="field-label">Résumé</label>
+          <textarea
+            className="field-input"
+            rows={2}
+            value={form.summary}
+            onChange={(ev) => setForm({ ...form, summary: ev.target.value })}
+          />
+          <label className="field-label">
+            Détails <span className="label-optional">— Markdown, peut être enrichi par les analyses futures</span>
+          </label>
+          <textarea
+            className="field-input entry-form-details"
+            rows={10}
+            value={form.details}
+            onChange={(ev) => setForm({ ...form, details: ev.target.value })}
+          />
+          <label className="field-label">
+            Notes personnelles <span className="label-optional">— jamais modifiées par Claude</span>
+          </label>
+          <textarea
+            className="field-input"
+            rows={4}
+            placeholder="Vos annotations, points de vigilance, questions ouvertes…"
+            value={form.notes}
+            onChange={(ev) => setForm({ ...form, notes: ev.target.value })}
+          />
+          <label className="field-label">Tags <span className="label-optional">— séparés par des virgules</span></label>
+          <input
+            className="field-input"
+            value={form.tags}
+            onChange={(ev) => setForm({ ...form, tags: ev.target.value })}
+          />
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn-ghost tall"
+              onClick={() => {
+                setEditingId(null);
+                setForm(null);
+              }}
+            >
+              Annuler
+            </button>
+            <button type="button" className="btn-primary" onClick={() => saveEdit(e)}>
+              Enregistrer
             </button>
           </div>
         </div>
