@@ -87,11 +87,13 @@ export default function App() {
         </nav>
       </header>
 
-      <main className="main">
-        <section className="hero compact">
-          <h1 className="hero-title">{c.title}</h1>
-          <p className="hero-text">{c.text}</p>
-        </section>
+      <main className={`main ${tab === 'knowledge' ? 'wide' : ''}`}>
+        {tab !== 'knowledge' && (
+          <section className="hero compact">
+            <h1 className="hero-title">{c.title}</h1>
+            <p className="hero-text">{c.text}</p>
+          </section>
+        )}
         {tab === 'settings' && <SettingsView />}
         {tab === 'captures' && (
           <CapturesView

@@ -613,68 +613,9 @@ body {
   gap: 8px;
 }
 
-.knowledge-toolbar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.knowledge-search {
-  flex: 1;
-  min-width: 200px;
-}
-
-/* ── Sommaire ── */
-.toc {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 22px 26px;
-  margin-bottom: 28px;
-}
-
-.toc-title {
-  font-family: var(--serif);
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0 0 12px;
-}
-
-.toc-list,
-.toc-list ol {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.toc-list > li {
-  margin: 8px 0;
-}
-
-.toc-list > li > a {
-  font-weight: 600;
-  font-size: 14.5px;
-}
-
-.toc-list ol {
-  margin: 4px 0 10px 22px;
-}
-
-.toc-list ol a {
-  font-size: 13.5px;
-  font-weight: 400;
-}
-
-.toc a {
-  color: var(--ink);
-  text-decoration: none;
-  display: inline-block;
-  padding: 2px 0;
-}
-
-.toc a:hover {
-  color: var(--sage-deep);
+.main.wide {
+  max-width: 1240px;
+  padding-top: 24px;
 }
 
 .toc-num {
@@ -683,31 +624,179 @@ body {
   margin-right: 4px;
 }
 
-.chapter {
-  margin-bottom: 32px;
-  scroll-margin-top: 90px;
+/* ── Documentation : sidebar + fiche ── */
+.kb-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
 }
 
-.chapter-title {
+.kb-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 84px;
+  max-height: calc(100dvh - 110px);
+  overflow-y: auto;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.kb-search {
+  width: 100%;
+}
+
+.kb-tree {
+  flex: 1;
+}
+
+.kb-tree-caption {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin: 0 0 6px;
+}
+
+.kb-chapter {
+  margin-bottom: 14px;
+}
+
+.kb-chapter-title {
   font-family: var(--serif);
-  font-size: 24px;
+  font-size: 14.5px;
   font-weight: 600;
-  margin: 0 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--sage-mist);
+  margin: 0 0 4px;
 }
 
-.doc-section {
-  margin-bottom: 22px;
-  scroll-margin-top: 90px;
+.kb-section {
+  margin: 2px 0 8px 10px;
 }
 
-.section-title {
-  font-family: var(--serif);
-  font-size: 17px;
+.kb-section-title {
+  font-size: 12px;
   font-weight: 600;
+  color: var(--ink-soft);
+  margin: 6px 0 2px;
+}
+
+.kb-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.kb-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  font-family: var(--sans);
+  font-size: 13.5px;
+  color: var(--ink);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.kb-item:hover {
+  background: var(--cream-deep);
+}
+
+.kb-item.active {
+  background: var(--sage-mist);
   color: var(--sage-deep);
-  margin: 0 0 10px;
+  font-weight: 600;
+}
+
+.kb-organize {
+  width: 100%;
+}
+
+.kb-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.kb-back {
+  display: none;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.kb-placeholder {
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 60px 24px;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 14.5px;
+}
+
+.kb-doc {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px 30px;
+}
+
+.kb-doc-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.kb-doc-module {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.kb-doc-title {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+
+.kb-doc-summary {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 0 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--line);
+}
+
+@media (max-width: 800px) {
+  .kb-layout {
+    display: block;
+  }
+
+  .kb-sidebar {
+    width: 100%;
+    position: static;
+    max-height: none;
+  }
+
+  .kb-back {
+    display: inline-block;
+  }
+
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  .kb-doc {
+    padding: 20px 18px;
+  }
 }
 
 .module-group {
